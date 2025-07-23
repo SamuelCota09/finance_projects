@@ -1,4 +1,5 @@
 # Quant Simulator - Forecast and Backtest of investment strategies with Python
+**⚠️ WIP - NOT WORKING AT THE MOMENT!!!**
 
 **Objective**
 - Build a simulator that tests different investment strategies in securities
