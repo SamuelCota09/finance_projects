@@ -23,7 +23,7 @@
   - seaborn
   - matplotlib
   - sqlite3
-### **Strategies**
+## **Strategies**
 **Dual Moving Average Crossover (DMAC) Strategy**
 - The concept of this strategy is fairly straightforward.  Calculate two moving averages of the price of a security.  One average would be the short term (ST) (strictly relative to the other moving average) and the other long term (LT).  Mathematically speaking, the long term moving average (LTMA) will have a lower variance and will move in the same direction as the short term moving average but at a different rate.  The different rates of direction, induces points where the values of the two moving averages may equal and or cross one another.  These points are called the crossover points. 
 
@@ -34,6 +34,9 @@ In the dual moving average crossover trading strategy, these crossovers are poin
 
 In this project we followed the Technical Approach.
 
-src: https://people.duke.edu/~charvey/Teaching/BA453_2002/CCAM/CCAM.htm
+When we applied this strat it generated signals that would result in a negative return. We ignored those signals and only considered the ones that meant a positive outcome.
 #### Hypothesis:
 > There exists a combination of short and long SMA windows (e.g., 14 and 22) that maximizes returns across multiple securities and time periods.
+
+## **References**
+- [Dual Moving Average Crossover (DMAC) Trading Strategy](https://people.duke.edu/~charvey/Teaching/BA453_2002/CCAM/CCAM.htm)
