@@ -18,7 +18,7 @@
   - yfinance
   - pandas
   - numpy
-  - inter
+  - itertools
   - numpy
   - seaborn
   - matplotlib
