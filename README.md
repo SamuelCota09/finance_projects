@@ -5,9 +5,9 @@
 > To design and evaluate rule-based trading strategies using historical data, in order to build intuition about financial markets, develop coding and analytical skills, and lay the foundation for more advanced algorithmic trading or quant research.
 
 ## **Overview**
-- Built a simulator that tests different investment strategies in securities
-- Predict movements or generate signals based in simple data and measure the outcome of those strategies base on real data
-- Implemented a Dual Moving Average Crossover (DMAC) Strategy
+- Built a simulator that tests different investment strategies in securities.
+- Predict movements or generate signals based in simple data and measure the outcome of those strategies base on real data.
+- Implemented a **Dual Moving Average Crossover (DMAC)** Strategy.
 - Created a algorithmic that checks if theres a pattern in the short and long SMA windows that maximizes returns across multiple securities and time periods.
 
 ## **Table of Contents**
