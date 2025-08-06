@@ -62,9 +62,26 @@ def optimize_sma_strategy(df, short_range, long_range):
     return results_df, best_result
 
 # --- PARAMETERS ---
-tickers = ['MSFT', 'AAPL', 'SPY', 'TSLA', 'NVDA']
-start_date = "2009-03-02"
-end_date = "2014-02-28"
+tickers = [
+    # Tech
+    'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'TSLA', 'META', 'ADBE', 'CRM', 'ORCL',
+    # Finance
+    'JPM', 'BAC', 'WFC', 'GS', 'AXP', 'V', 'MA', 'PYPL', 'C', '',
+    # Energy
+    'XOM', 'CVX', 'BP', 'TOT', 'SLB', '', '', '', '', '',
+    # Health
+    'JNJ', 'PFE', 'MRK', 'LLY', 'ABBV', 'BMY', '', '', ' ', '',
+    # Consume
+    'WMT', 'PG', 'KO', 'PEP', 'COST', 'MCD', 'SBUX', 'DIS', 'HD', 'NKE',
+    # Industry
+    'GE', 'CAT', 'UPS', 'MMM', 'BA', 'DE', '', '', ' ', '',
+    # China / Global
+    'BABA', 'TSM', 'NIO', '', '', '', '', '', '', '',
+    # ETFs
+    'SPY', 'QQQ', 'DIA', 'ARKK', 'EFA', '', '', '', '', ''
+]
+start_date = "2020-03-02"
+end_date = "2022-08-05"
 short_range = range(5, 51, 5)
 long_range = range(20, 201, 10)
 
