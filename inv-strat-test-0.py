@@ -14,27 +14,48 @@ class SMABacktester:
         self.long_window = long_window
         self._prepare_data()
 
+    # --- DATA PREPARATION ---
     def _prepare_data(self):
+
+        # SMA Short Calculatin and Atribution to a Row
         self.df['SMA_Short'] = self.df['Close'].rolling(window=self.short_window).mean()
+
+        # SMA Long Calculatin and Atribution to a Row
         self.df['SMA_Long'] = self.df['Close'].rolling(window=self.long_window).mean()
+        
+        # --- STRATEGY ---
+
+        # Initial Signal
         self.df['Signal'] = 0
-        self.df.loc[(self.df['SMA_Short'].shift(1) < self.df['SMA_Long'].shift(1)) & 
-                    (self.df['SMA_Short'] > self.df['SMA_Long']), 'Signal'] = 1
+
+        # Signal of 1 (Long) when SMA Short crosses and is greater than SMA Long
         self.df.loc[(self.df['SMA_Short'].shift(1) > self.df['SMA_Long'].shift(1)) & 
-                    (self.df['SMA_Short'] < self.df['SMA_Long']), 'Signal'] = -1
+                    (self.df['SMA_Short'] < self.df['SMA_Long']), 'Signal'] = 1
+
+        # Signal of -1 (Short) when SMA Short crosses and is not greater than SMA Long
+        self.df.loc[(self.df['SMA_Short'].shift(1) < self.df['SMA_Long'].shift(1)) & 
+                    (self.df['SMA_Short'] > self.df['SMA_Long']), 'Signal'] = -1
+        
+        # Uses Only the Data with Long or Short Signals
         self.signals = self.df[self.df['Signal'] != 0].copy()
+        # Restraints the Data where theres Equal Signals
         self.signals = self.signals[self.signals['Signal'] != self.signals['Signal'].shift(1)]
+        
         self.df['daily_return'] = self.df['Close'].pct_change()*100
 
+    # --- SIMULATION ---
     def simulate_trades(self):
         self.signals['Trade_Return'] = np.nan
         entry_price = None
 
+        # Iterates over each row
         for i, row in self.signals.iterrows():
             if row['Signal'] == 1:
                 entry_price = row['Close']
             elif row['Signal'] == -1 and entry_price is not None:
                 current_return = row['Close'] - entry_price
+                
+                # Stores the Current Return if its Positive and Ignores if the Short leads in a loss
                 if current_return > 0:
                     self.signals.loc[i, 'Trade_Return'] = current_return
                     entry_price = None
@@ -44,6 +65,8 @@ class SMABacktester:
 # --- OPTIMIZATION FUNCTION ---
 def optimize_sma_strategy(df, short_range, long_range):
     results = []
+
+    # Computes the multiple combinations of SMA Short and SMA long and checks the Best
     for short_w, long_w in itertools.product(short_range, long_range):
         if short_w >= long_w:
             continue
@@ -64,24 +87,24 @@ def optimize_sma_strategy(df, short_range, long_range):
 # --- PARAMETERS ---
 tickers = [
     # Tech
-    'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'TSLA', 'META', 'ADBE', 'CRM', 'ORCL',
+    'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA',
     # Finance
-    'JPM', 'BAC', 'WFC', 'GS', 'AXP', 'V', 'MA', 'PYPL', 'C', '',
+    'JPM', 'BAC', 'WFC', 'GS', 'AXP',
     # Energy
-    'XOM', 'CVX', 'BP', 'TOT', 'SLB', '', '', '', '', '',
+    'XOM', 'CVX', 'BP', 'ENB', 'SLB',
     # Health
-    'JNJ', 'PFE', 'MRK', 'LLY', 'ABBV', 'BMY', '', '', ' ', '',
+    'JNJ', 'PFE', 'MRK', 'LLY', 'ABBV',
     # Consume
-    'WMT', 'PG', 'KO', 'PEP', 'COST', 'MCD', 'SBUX', 'DIS', 'HD', 'NKE',
+    'WMT', 'PG', 'KO', 'PEP', 'COST',
     # Industry
-    'GE', 'CAT', 'UPS', 'MMM', 'BA', 'DE', '', '', ' ', '',
+    'GE', 'CAT', 'UPS', 'MMM', 'BA',
     # China / Global
-    'BABA', 'TSM', 'NIO', '', '', '', '', '', '', '',
+    'BABA', 'TSM', 'NIO', 'XIACY', 'XPEV',
     # ETFs
-    'SPY', 'QQQ', 'DIA', 'ARKK', 'EFA', '', '', '', '', ''
+    'SPY', 'QQQ', 'DIA', 'ARKK', 'EFA'
 ]
-start_date = "2020-03-02"
-end_date = "2022-08-05"
+start_date = "2023-04-25"
+end_date = "2025-08-12"
 short_range = range(5, 51, 5)
 long_range = range(20, 201, 10)
 
@@ -96,18 +119,19 @@ all_results = {}
 # --- PRICE CHARTS FIRST ---
 fig_price, axes_price = plt.subplots(len(tickers), 1, figsize=(14, 5 * len(tickers)))
 
+# Single Ticket
 if len(tickers) == 1:
     axes_price = [axes_price]  # ensure it's iterable
 
+# Multiple Tickets
 for idx, ticker in enumerate(tickers):
     df = data[ticker].reset_index()[['Date', 'Close']]
     df['Date'] = pd.to_datetime(df['Date'])
 
-    # Simulação com SMA 14-22
+    # Simulation with SMA 14-22
     backtester = SMABacktester(df, 14, 22)
     trades = backtester.simulate_trades()
 
-    # Optimização
     results_df, best_result = optimize_sma_strategy(df, short_range, long_range)
     all_results[ticker] = results_df
 
@@ -143,9 +167,12 @@ plt.show()
 
 # --- HEATMAPS SEPARATE ---
 fig_heat, axes_heat = plt.subplots(len(tickers), 1, figsize=(10, 5 * len(tickers)))
+
+# Single Ticket
 if len(tickers) == 1:
     axes_heat = [axes_heat]
 
+#Multiple Tickets
 for idx, ticker in enumerate(tickers):
     results_df = all_results[ticker]
     pivot = results_df.pivot(index="Short_SMA", columns="Long_SMA", values="Cumulative_Return")
